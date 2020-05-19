@@ -3,7 +3,8 @@
 addEventListener('load', start);
 function start(){
   var keys = [];
-  var speed = 10;
+  //default 10; 1000ms divided by hz
+  var speed = 1000/108;
   var usablekeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "W", "w", "A", "a", "S", "s", "D", "d", "K", "k", "L", "l", "Z", "z", "X", "x", "P", "p"];
   var canvas = document.getElementById("gamecanvas");
   var ctx = canvas.getContext("2d");

@@ -14,7 +14,7 @@ function Player(){
 
   this.yspeed = 0;
   this.xspeed = 0;
-  this.movespeed = 3;
+  this.movespeed = 2.5;
 
 
   this.draw = function(){
