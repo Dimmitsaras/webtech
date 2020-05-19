@@ -4,9 +4,11 @@ lang="en-GB" xml:lang="en-GB">
 <head>
 <meta charset="utf-8"/>
 <title>test</title>
+<link rel="stylesheet" href="index.css"/>
 <script src="dodgegame.js"></script>
 <script src="player.js"></script>
-<script src="p5.js"></script>
+<script src="button.js"></script>
+<script src="pausecard.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
@@ -18,6 +20,7 @@ lang="en-GB" xml:lang="en-GB">
     <nav>
       <a class = "Home" href="index.html">HOME</a>
       <a class = "Deckbuilder" href="deckbuilder.html">DECKBUILDER</a>
+      text
     </nav>
   </header>
   <main>
@@ -26,6 +29,11 @@ lang="en-GB" xml:lang="en-GB">
     <p><a href="#2">This paragraph is a link</a></p>
     <p>Should this paragraph be a link, or not?</p>
     <p>Ideas: script to change css colors</p>
+
+      <canvas id="gamecanvas" width="600" height="600"> </canvas>
+      <canvas id="gameUI" width="600" height="40"> </canvas>
+      <p> test </p>
+
   </main>
 
 </body>
