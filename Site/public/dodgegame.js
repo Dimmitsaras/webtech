@@ -3,6 +3,7 @@
 addEventListener('load', start);
 function start(){
   var keys = [];
+//  var enemies = [];
   //default 10; 1000ms divided by hz
   var speed = 1000/108;
   var usablekeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "W", "w", "A", "a", "S", "s", "D", "d", "K", "k", "L", "l", "Z", "z", "X", "x", "P", "p"];
@@ -11,6 +12,7 @@ function start(){
   var uicanvas = document.getElementById("gameUI");
   var ctxui = uicanvas.getContext("2d");
   var p = new Player();
+  var e = new Enemy();
   var start = new Button(p);
   var pausecard = new Pausecard();
   fillcanvas();
@@ -57,7 +59,11 @@ function start(){
     //if the game isnt paused
     if(!keys.includes("P") && !keys.includes("p")){
       p.update(keys);
+      //e.update();
       start.update(keys)
+      if(!start.visible){
+        //Gameplay has started
+      }
       draw();
     }
     //if the game is paused
@@ -70,6 +76,12 @@ function start(){
     fillcanvas();
     start.draw();
     p.draw();
+    if(!start.visible){
+      //console.log("no");
+      //Gameplay has started
+        e.draw();
+    }
+
   }
 
   function playerintersection(p, object){

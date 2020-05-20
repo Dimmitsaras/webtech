@@ -12,11 +12,15 @@ function Pausecard(){
   this.draw = function(){
     ctx.strokeStyle = 'white';
     ctx.fillStyle = 'white';
-    ctx.font = "30px Arial";
+    // 30px = 1.875em base 16
+    ctx.font = "1.875em Arial";
+    ctx.textAlign = "center";
     ctx.strokeRect(this.x, this.y, this.width, this.height);
-    ctx.fillText("Paused", this.x + 50, this.y + this.height/2);
-    ctx.font = "14px Arial";
-    ctx.fillText("Press any key to continue", this.x + 20, this.y + this.height/2 + 30);
+    //ctx.fillText("Paused", this.x + 50, this.y + this.height/2);
+    ctx.fillText("Paused", this.x + this.width/2, this.y + this.height/2 - 10);
+    // 14px = 0.875em base 16
+    ctx.font = "0.875em Arial";
+    ctx.fillText("Press any key to continue", this.x + this.width/2, this.y + this.height/2 + 20);
   }
   this.update = function(){
     this.draw();

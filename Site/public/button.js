@@ -16,9 +16,12 @@ function Button(p){
     if(this.visible){
       ctx.strokeStyle = 'white';
       ctx.fillStyle = 'white';
-      ctx.font = "48px Arial";
+      // 48px = 3em base 16
+      ctx.font = "3em Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.strokeRect(this.x, this.y, this.width, this.height);
-      ctx.fillText("Start", this.x *1.1, this.y + this.height/2 + 18);
+      ctx.fillText("Start", this.x + this.width/2, this.y + this.height/2);
     }
   }
 
@@ -62,7 +65,7 @@ function Button(p){
   this.playerintersection = function(){
     var pcenterx = p.x + p.width/2;
     var pcentery = p.y + p.height/2;
-    console.log(pcenterx >= this.x && pcenterx <= this.x + this.width && pcentery >= this.y && pcentery <= this.y + this.height);
+    //console.log(pcenterx >= this.x && pcenterx <= this.x + this.width && pcentery >= this.y && pcentery <= this.y + this.height);
     return(pcenterx >= this.x && pcenterx <= this.x + this.width && pcentery >= this.y && pcentery <= this.y + this.height);
 
   }

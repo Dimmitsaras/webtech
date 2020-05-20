@@ -12,22 +12,53 @@ function Player(){
   this.y = canvas.height - 100 - this.height/2;
   this.life = 20;
 
+  this.firerate = 5;
+  this.firecounter = 0;
+  this.firing = false;
+  this.bulletspeed = 3;
+  this.damage = 1;
+
   this.yspeed = 0;
   this.xspeed = 0;
   this.movespeed = 2.5;
+
+  this.bullets = [];
+  this.bulletthreshold = canvas.width / this.bulletspeed;
 
 
   this.draw = function(){
     ctx.fillStyle = 'red';
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    if(!this.bullets.isEmpty){
+      this.bullets.forEach(bullet => bullet.draw());
+      this.bullets.forEach(bullet => bullet.update());
+    }
   }
 
   this.update = function(keys){
     //console.log(keys.toString());
+
+
     this.yspeed = 0;
     this.xspeed = 0;
+    //console.log(this.bullets);
     if(!keys.isEmpty){
       keys.forEach(key => this.move(key));
+    }
+    if(this.firing && this.firecounter >= this.firerate){
+      this.firecounter = 0;
+      this.bullets.push(new Bullet(this.x + this.width/2, this.y-this.height/2, 0, -this.bulletspeed, this.damage));
+      this.firing = false;
+    }
+    else{
+      this.firecounter++;
+    }
+    if(!this.bullets.isEmpty || typeof(bullets) != 'undefined'){
+      this.bullets.forEach((bullet, i) => {
+        if(bullet.lifetime > this.bulletthreshold){
+          this.bullets.splice(i, 1);
+        }
+      });
     }
     if(!this.outofboundsx(this.x + this.xspeed)){
       this.x = this.x + this.xspeed;
@@ -79,6 +110,12 @@ function Player(){
     case "ArrowLeft":
       //console.log("Left");
       this.xspeed = this.xspeed - this.movespeed;
+      break;
+    case "K":
+    case "k":
+    case "Z":
+    case "z":
+      this.firing = true;
       break;
     default:
       return;
