@@ -24,6 +24,7 @@ let http = require("http");
 let fs = require("fs").promises;
 let OK = 200, NotFound = 404, BadType = 415, Error = 500;
 let types, paths;
+let gamedatatype = ".json";
 
 // Start the server:
 start();
@@ -49,7 +50,11 @@ async function start() {
 
 // Serve a request by delivering a file.
 async function handle(request, response) {
-    let url = request.url;
+    var url = request.url;
+    if (url.startsWith("/gamedata")) getGamedata(url, response);
+    else getFile(url, response)
+}
+async function getFile(url, response) {
     if (url.endsWith("/")) url = url + "index.html";
     let ok = await checkPath(url);
     if (! ok) return fail(response, NotFound, "URL not found (check case)");
@@ -58,6 +63,18 @@ async function handle(request, response) {
     let file = root + url;
     let content = await fs.readFile(file);
     deliver(response, type, content);
+}
+
+async function getGamedata(url, response){
+  let file = await root + url + gamedatatype;
+  let content = await fs.readFile(file, "utf8");
+  //console.log(content);
+  //let type = await findType(content);
+  //let text = await JSON.stringify(content);
+  //let data = JSON.parse(text.responseText);
+  //console.log(data);
+  console.log(content);
+  deliver (response, "application/json", content);
 }
 
 // Check if a path is in or can be added to the set of site paths, in order

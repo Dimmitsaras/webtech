@@ -6,36 +6,41 @@ function Player(){
   var canvas = document.getElementById("gamecanvas");
   var ctx = canvas.getContext("2d");
 
+  this.type = "Player";
+
   this.width = 20;
   this.height = 20;
   this.x = canvas.width/2 - this.width/2;
   this.y = canvas.height - 100 - this.height/2;
   this.life = 20;
 
-  this.firerate = 5;
+  this.firerate = 10;
   this.firecounter = 0;
   this.firing = false;
   this.bulletspeed = 3;
+  this.bulletdirection = -1;
   this.damage = 1;
+  this.bullets = [];
+  this.bulletthreshold = canvas.height * 2 / this.bulletspeed;
 
   this.yspeed = 0;
   this.xspeed = 0;
   this.movespeed = 2.5;
 
-  this.bullets = [];
-  this.bulletthreshold = canvas.width / this.bulletspeed;
 
 
   this.draw = function(){
     ctx.fillStyle = 'red';
     ctx.fillRect(this.x, this.y, this.width, this.height);
     if(!this.bullets.isEmpty){
-      this.bullets.forEach(bullet => bullet.draw());
-      this.bullets.forEach(bullet => bullet.update());
+      this.bullets.forEach((bullet, i) => {
+        bullet.update();
+        bullet.draw();
+      });
     }
   }
 
-  this.update = function(keys){
+  this.update = function(keys, enemies){
     //console.log(keys.toString());
 
 
@@ -47,15 +52,25 @@ function Player(){
     }
     if(this.firing && this.firecounter >= this.firerate){
       this.firecounter = 0;
-      this.bullets.push(new Bullet(this.x + this.width/2, this.y-this.height/2, 0, -this.bulletspeed, this.damage));
+      if(this.bulletdirection < 0){
+        this.bullets.push(new Bullet(this.x + this.width/2, this.y-this.height/2, 0, this.bulletdirection * this.bulletspeed, this.damage));
+      }
+      else{
+        this.bullets.push(new Bullet(this.x + this.width/2, this.y, 0, this.bulletdirection * this.bulletspeed, this.damage));
+      }
       this.firing = false;
     }
     else{
       this.firecounter++;
     }
+    //console.log(enemies);
     if(!this.bullets.isEmpty || typeof(bullets) != 'undefined'){
       this.bullets.forEach((bullet, i) => {
-        if(bullet.lifetime > this.bulletthreshold){
+        if(!bullet.outofboundsx() && !bullet.outofboundsy()){
+          //console.log("in bounds");
+          enemies.forEach(enemy => bullet.intersectswith(enemy));
+        }
+        if(bullet.lifetime > this.bulletthreshold || !bullet.visible){
           this.bullets.splice(i, 1);
         }
       });
@@ -74,6 +89,7 @@ function Player(){
     else{
       //console.log("outofy");
     }
+    //enemybullets.forEach(bullet => bullet.intersectswith(this));
 
   }
 
@@ -127,5 +143,13 @@ function Player(){
   }
   this.outofboundsy = function(newlocationy){
     return (newlocationy < 0 || newlocationy + this.height  > canvas.height);
+  }
+  this.dead = function(){
+    if(this.life <= 0){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

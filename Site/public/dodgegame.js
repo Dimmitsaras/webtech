@@ -1,9 +1,23 @@
 "use strict";
 
 addEventListener('load', start);
+
+async function fetchdata(){
+  fetch("/gamedata").then(receive);
+}
+async function receive(response){
+  let data = await response.json();
+  //var html = "<li>" + data;
+  console.log(data);
+  var haha = document.getElementById("haha");
+  haha.innerHTML = data.type;
+}
+
 function start(){
+  fetchdata();
   var keys = [];
-//  var enemies = [];
+  var enemies = [];
+  var enemybullets = [];
   //default 10; 1000ms divided by hz
   var speed = 1000/108;
   var usablekeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "W", "w", "A", "a", "S", "s", "D", "d", "K", "k", "L", "l", "Z", "z", "X", "x", "P", "p"];
@@ -12,8 +26,12 @@ function start(){
   var uicanvas = document.getElementById("gameUI");
   var ctxui = uicanvas.getContext("2d");
   var p = new Player();
-  var e = new Enemy();
-  var start = new Button(p);
+  var frametimer = 0;
+  //x, y, damage, firerate, magsize, bulletspeed)
+  enemies.push(new Enemy(20, 30, 5, 1, 30, 20, 3));
+  enemies.push(new Enemy(80, 130, 5, 1, 30, 20, 3))
+
+  var startgame = new Button(p);
   var pausecard = new Pausecard();
   fillcanvas();
 
@@ -28,7 +46,7 @@ function start(){
   }
 
   function logKey(e){
-    console.log(e.key);
+    //console.log(e.key);
     //p checks for pause
     if(!keys.isEmpty && !keys.includes(e.key) && usablekeys.includes(e.key)){
       if(keys.includes("P")){
@@ -58,13 +76,23 @@ function start(){
   function update(){
     //if the game isnt paused
     if(!keys.includes("P") && !keys.includes("p")){
-      p.update(keys);
+      p.update(keys, enemies);
       //e.update();
-      start.update(keys)
-      if(!start.visible){
+      startgame.update(keys)
+      if(!startgame.visible && !p.dead()){
         //Gameplay has started
+        frametimer++;
+        //console.log("hi");
+        //console.log(enemies);
+          enemies.forEach((enemy, i) => {
+            enemy.update(p);
+            if(enemy.dead()){
+              enemies.splice(i, 1);
+            }
+
+          });
       }
-      draw();
+      requestAnimationFrame(draw);
     }
     //if the game is paused
     else{
@@ -74,12 +102,13 @@ function start(){
 
   function draw(){
     fillcanvas();
-    start.draw();
+    startgame.draw();
     p.draw();
-    if(!start.visible){
+    if(!startgame.visible && !p.dead()){
       //console.log("no");
       //Gameplay has started
-        e.draw();
+      //console.log("hi2");
+        enemies.forEach(enemy => enemy.draw());
     }
 
   }
