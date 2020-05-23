@@ -3,21 +3,25 @@
 addEventListener('load', start);
 
 async function fetchdata(){
-  fetch("/gamedata").then(receive);
+  return await fetch("/gamedata1").then(receive);
 }
 async function receive(response){
   let data = await response.json();
-  //var html = "<li>" + data;
   console.log(data);
   var haha = document.getElementById("haha");
-  haha.innerHTML = data.type;
+  return await data;
 }
 
-function start(){
-  fetchdata();
+async function start(){
+  //let data;
+  //fetchdata();
+  var BreakException = {};
+  let gamedata = await fetchdata();
+  console.log(gamedata);
   var keys = [];
   var enemies = [];
   var enemybullets = [];
+  var score = 1000;
   //default 10; 1000ms divided by hz
   var speed = 1000/108;
   var usablekeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "W", "w", "A", "a", "S", "s", "D", "d", "K", "k", "L", "l", "Z", "z", "X", "x", "P", "p"];
@@ -26,10 +30,12 @@ function start(){
   var uicanvas = document.getElementById("gameUI");
   var ctxui = uicanvas.getContext("2d");
   var p = new Player();
+  var scoretimer = 0;
   var frametimer = 0;
+  var victory = false;
   //x, y, damage, firerate, magsize, bulletspeed)
-  enemies.push(new Enemy(20, 30, 5, 1, 30, 20, 3));
-  enemies.push(new Enemy(80, 130, 5, 1, 30, 20, 3))
+  //enemies.push(new Enemy(20, 30, 5, 1, 30, 20, 3));
+  //enemies.push(new Enemy(80, 130, 5, 1, 30, 20, 3))
 
   var startgame = new Button(p);
   var pausecard = new Pausecard();
@@ -76,12 +82,54 @@ function start(){
   function update(){
     //if the game isnt paused
     if(!keys.includes("P") && !keys.includes("p")){
-      p.update(keys, enemies);
+      //score parameter makes this score = score + this.score!
+      score = p.update(keys, enemies, score);
       //e.update();
       startgame.update(keys)
-      if(!startgame.visible && !p.dead()){
+      if(!startgame.visible && !p.dead() && !victory){
+        scoretimer ++;
+        if(scoretimer / 60 == 1){
+          score --;
+          scoretimer = 0;
+        }
         //Gameplay has started
-        frametimer++;
+      //  console.log(enemies.length);
+        //console.log(frametimer);
+        if(enemies.length <= 3){
+          //load an enemy from gamedata
+          try{
+            gamedata.forEach((gamedatarow, i) => {
+              if(gamedatarow.frame == frametimer){
+                if(gamedatarow.type === "Enemy"){
+                  //x, y, damage, firerate, magsize, bulletspeed)
+                  enemies.push(new Enemy(gamedatarow.x, gamedatarow.y, gamedatarow.life, gamedatarow.damage, gamedatarow.firerate, gamedatarow.magsize, gamedatarow.bulletspeed));
+                }
+              }
+              else if (gamedatarow.frame > frametimer){
+                //assume frame is ascending so no need to iterate the entire list
+                //break out of forEach
+                throw BreakException;
+              }
+              else{
+                //console.log(frametimer);
+                //frametimer++;
+              }
+              });
+            }
+            catch(e){
+              if (e!== BreakException){
+                throw e;
+              }
+            }
+            frametimer++
+          }
+          if(enemies.length == 0 && gamedata[0].frame < frametimer){
+            //victory
+            victory = true;
+          }
+
+
+
         //console.log("hi");
         //console.log(enemies);
           enemies.forEach((enemy, i) => {
@@ -93,6 +141,11 @@ function start(){
           });
       }
       requestAnimationFrame(draw);
+      if(p.dead){
+          //Player dead game over
+          document.getElementById("haha").innerHTML = score;
+      }
+
     }
     //if the game is paused
     else{

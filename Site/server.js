@@ -66,14 +66,19 @@ async function getFile(url, response) {
 }
 
 async function getGamedata(url, response){
-  let file = await root + url + gamedatatype;
-  let content = await fs.readFile(file, "utf8");
+  let defaultfile = await "." + "/gamedatadefault" + gamedatatype;
+  let file = await "." + url + gamedatatype;
+  //console.log(defaultfile);
+  //console.log(file);
+  let content;
+  //try to find file of that type, if doesnt exist deliver the default file.
+  try{
+     content = await fs.readFile(file, "utf8");
+  }
+  catch(e){
+     content = await fs.readFile(defaultfile, "utf8");
+  }
   //console.log(content);
-  //let type = await findType(content);
-  //let text = await JSON.stringify(content);
-  //let data = JSON.parse(text.responseText);
-  //console.log(data);
-  console.log(content);
   deliver (response, "application/json", content);
 }
 

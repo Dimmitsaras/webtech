@@ -50,6 +50,9 @@ function Bullet(initx, inity, xspeed, yspeed, damage){
       if (unit.type === "Player"){
         playerlife.innerHTML = unit.life;
       }
+      else if (unit.type === "Enemy"){
+        
+      }
       return true;
     }
     else{

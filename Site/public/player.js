@@ -12,7 +12,7 @@ function Player(){
   this.height = 20;
   this.x = canvas.width/2 - this.width/2;
   this.y = canvas.height - 100 - this.height/2;
-  this.life = 20;
+  this.life = 100;
 
   this.firerate = 10;
   this.firecounter = 0;
@@ -27,6 +27,8 @@ function Player(){
   this.xspeed = 0;
   this.movespeed = 2.5;
 
+  this.score = 0;
+
 
 
   this.draw = function(){
@@ -40,9 +42,9 @@ function Player(){
     }
   }
 
-  this.update = function(keys, enemies){
+  this.update = function(keys, enemies, score){
     //console.log(keys.toString());
-
+    //this.score ++;
 
     this.yspeed = 0;
     this.xspeed = 0;
@@ -68,7 +70,14 @@ function Player(){
       this.bullets.forEach((bullet, i) => {
         if(!bullet.outofboundsx() && !bullet.outofboundsy()){
           //console.log("in bounds");
-          enemies.forEach(enemy => bullet.intersectswith(enemy));
+          enemies.forEach((enemy,i) => {
+            if(bullet.intersectswith(enemy)){
+              //console.log("true");
+              this.score = this.score + this.damage;
+              score = score + this.damage;
+              console.log(score);
+            }
+          });
         }
         if(bullet.lifetime > this.bulletthreshold || !bullet.visible){
           this.bullets.splice(i, 1);
@@ -89,6 +98,7 @@ function Player(){
     else{
       //console.log("outofy");
     }
+    return score;
     //enemybullets.forEach(bullet => bullet.intersectswith(this));
 
   }
