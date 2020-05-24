@@ -12,8 +12,14 @@ lang="en-GB" xml:lang="en-GB">
 <script src="pausecard.js"></script>
 <script src="enemy.js"></script>
 <script src="bullet.js"></script>
+<audio id="audiopotion" src="./Assets/Audio/potion.mp3" type="audio/mp3"></audio>
+<audio id="audiopause" src="./Assets/Audio/pause.mp3" type="audio/mp3"></audio>
+<audio id="audioclick" src="./Assets/Audio/click.mp3" type="audio/mp3"></audio>
+<audio id="audiothud" src="./Assets/Audio/thud.mp3" type="audio/mp3"></audio>
+<audio id="audionoteffective" src="./Assets/Audio/noteffective.mp3" type="audio/mp3"></audio>
+<audio id="audioeffective" src="./Assets/Audio/effective.mp3" type="audio/mp3"></audio>
+<audio id="audiosupereffective" src="./Assets/Audio/supereffective.mp3" type="audio/mp3"></audio>
 </head>
-
 <body>
   <header>
     <section id="icon">
@@ -30,10 +36,12 @@ lang="en-GB" xml:lang="en-GB">
   <main>
     <p><strong>This paragraph is bold.</strong></p>
     <p>Should this paragraph be bold, or not?</p>
-    <p id="haha">Ideas: script to change css colors</p>
       <canvas id="gamecanvas" width="600" height="600"> </canvas>
       <canvas id="gameUI" width="600" height="40"> </canvas>
-      <p id="playerlife">life</p>
+      <h3>
+        <p id="score">Score</p>
+        <p id="playerlife">Life</p>
+      </h3>
   </main>
   <p>test2</p>
 </body>

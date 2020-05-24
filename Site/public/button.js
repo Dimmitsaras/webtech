@@ -37,7 +37,7 @@ function Button(p){
       case "k":
       case "Z":
       case "z":
-        if(this.playerintersection()){
+        if(this.playerintersection() && this.visible){
           this.click();
         }
         break;
@@ -45,7 +45,7 @@ function Button(p){
       case "l":
       case "X":
       case "x":
-        if(this.playerintersection()){
+        if(this.playerintersection() && this.visible){
           this.unclick();
         }
         break;
@@ -56,6 +56,7 @@ function Button(p){
 
   this.click = function(){
     this.visible = false;
+    document.getElementById("audiopotion").play();
     //start the game
   }
   this.unclick = function(){

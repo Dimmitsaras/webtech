@@ -12,7 +12,7 @@
 
 // Change the port to the default 80, if there are no permission issues and port
 // 80 isn't already in use. The root folder corresponds to the "/" url.
-let port = 8080;
+let port = 8443;
 let root = "./public"
 
 // Load the library modules, and define the global constants and variables.
@@ -20,11 +20,13 @@ let root = "./public"
 // See http://en.wikipedia.org/wiki/List_of_HTTP_status_codes.
 // The file types supported are set up in the defineTypes function.
 // The paths variable is a cache of url paths in the site, to check case.
-let http = require("http");
+let https = require("https");
 let fs = require("fs").promises;
 let OK = 200, NotFound = 404, BadType = 415, Error = 500;
-let types, paths;
+let types, paths, options;
 let gamedatatype = ".json";
+
+
 
 // Start the server:
 start();
@@ -39,7 +41,11 @@ async function start() {
         types = defineTypes();
         paths = new Set();
         paths.add("/");
-        let service = http.createServer(handle);
+        options = {
+          key: await fs.readFile('key.pem'),
+          cert: await fs.readFile('cert.pem')
+        };
+        let service = https.createServer(options, handle);
         service.listen(port, "localhost");
         let address = "http://localhost";
         if (port != 80) address = address + ":" + port;
@@ -51,14 +57,70 @@ async function start() {
 // Serve a request by delivering a file.
 async function handle(request, response) {
     var url = request.url;
-    if (url.startsWith("/gamedata")) getGamedata(url, response);
-    else getFile(url, response)
+    if (url.endsWith("/")) url =  url + "index.html";
+    //console.log(url);
+    if(await validate(url)){
+      if (url.startsWith("/gamedata")){
+        console.log("gamedata");
+        getGamedata(url, response);
+      }
+      else getFile(request, url, response)
+    }
+    else{
+      return fail(response, BadType, "Invalid URL");
+    }
+
+async function validate(url){
+
+  if(url.includes("/.") || url.includes("//") || url.includes(" ")){
+    return false;
+  }
+  else if(await !isASCII(url)){
+    return false;
+  }
+  else if(await !hasExtension(url)){
+    //console.log("undefined?");
+    return false;
+  }
+  else{
+    return true;
+  }
 }
-async function getFile(url, response) {
-    if (url.endsWith("/")) url = url + "index.html";
+
+function hasExtension(url){
+  var dot = url.lastIndexOf(".");
+  var extension = url.substring(dot + 1);
+  //console.log(types[extension]);
+  if(types[extension] !== undefined){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+function isASCII(url) {
+    return /^[\x00-\x7F]*$/.test(url);
+}
+
+}
+async function getFile(request, url, response) {
+
     let ok = await checkPath(url);
     if (! ok) return fail(response, NotFound, "URL not found (check case)");
-    let type = findType(url);
+    let type = await findType(url);
+    if(type.includes("html")){
+      let otype = "text/html";
+      let ntype = "application/xhtml+xml";
+      let header = await request.headers.accept;
+      let accepts = header.split(",");
+      if (accepts.indexOf(ntype) >= 0){
+        type = ntype;
+      }
+      else{
+        type = otype;
+      }
+    }
     if (type == null) return fail(response, BadType, "File type not supported");
     let file = root + url;
     let content = await fs.readFile(file);
@@ -68,6 +130,7 @@ async function getFile(url, response) {
 async function getGamedata(url, response){
   let defaultfile = await "." + "/gamedatadefault" + gamedatatype;
   let file = await "." + url + gamedatatype;
+  //let type = types[json];
   //console.log(defaultfile);
   //console.log(file);
   let content;

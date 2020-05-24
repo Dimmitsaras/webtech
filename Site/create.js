@@ -1,43 +1,18 @@
 "use strict";
 
 var sqlite = require("sqlite");
-var db;
+//var db;
 
 create();
 
 async function create() {
     try {
-        db = await sqlite.open("./db.sqlite");
-        await db.run("pragma foreign_keys = on");
-        await db.run("create table animals (id primary key, breed)");
-        await db.run("insert into animals values (42,'dog')");
-        await db.run("insert into animals values (53,'fish')");
-        await db.run("create table customers (username primary key, name)");
-        await db.run("insert into customers values ('ab12345', 'Pat')");
-        await db.run("insert into customers values ('cd67890', 'Chris')");
-        await db.run(
-            "create table sales (id, username, price, " +
-                "foreign key(id) references animals(id), " +
-                "foreign key(username) references customers(username) " +
-            ")");
-        await db.run("insert into sales values (42, 'ab12345', 100)");
-        await db.run("insert into sales values (53, 'cd67890', 50)");
+        var db = await sqlite.open("./dodgegame.sqlite");
+        await db.run("CREATE TABLE users (userid INTEGER NOT NULL, username, password, primary key (userid))");
+        await db.run("INSERT INTO users (username, password) VALUES ('test', 'password')");
+        await db.run("CREATE TABLE highscores (id, gameid, nickname, gamedata, highscore, foreign key (id) references users(id))");
+        await db.get("pragma foreign_keys = on");
     } catch (e) { console.log(e); }
 }
-
-var sqlite = require("sqlite");
-var db;
-
-sales();
-
-async function sales() {
-    try {
-        db = await sqlite.open("./db.sqlite");
-        var xs = await db.all(
-            "select * from sales " +
-            "join animals using (id) " +
-            "join customers using (username)"
-        );
-        console.log(xs);
-    } catch (e) { console.log(e); }
-}
+//db.all = array of objects
+//db.get = get single json object

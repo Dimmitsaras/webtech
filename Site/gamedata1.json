@@ -1,8 +1,8 @@
 [
-  {"type":"Enemy", "frame":15, "x":80, "y":130, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3},
-  {"type":"Enemy", "frame":50, "x":0, "y":0, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3},
-  {"type":"Enemy", "frame":130, "x":39, "y":63, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3},
-  {"type":"Enemy", "frame":135, "x":432, "y":320, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3},
-  {"type":"Enemy", "frame":156, "x":460, "y":251, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3},
-  {"type":"Enemy", "frame":521, "x":252, "y":333, "life":5, "damage":1, "firerate":30, "magsize":20, "bulletspeed":3}
+  {"type":"Enemy", "frame":15, "moving":false, "movespeed":0, "x":80, "y":130, "finalx":0, "finaly":0, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3},
+  {"type":"Enemy", "frame":50, "moving":false, "movespeed":0, "x":0, "y":0, "finalx":0, "finaly":0, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3},
+  {"type":"Enemy", "frame":130, "moving":true, "movespeed":2, "x":39, "y":63, "finalx":600, "finaly":600, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3},
+  {"type":"Enemy", "frame":135, "moving":false, "movespeed":0, "x":432, "y":320, "finalx":0, "finaly":0, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3},
+  {"type":"Enemy", "frame":156, "moving":false, "movespeed":0, "x":460, "y":251, "finalx":0, "finaly":0, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3},
+  {"type":"Enemy", "frame":521, "moving":false, "movespeed":0, "x":252, "y":333, "finalx":0, "finaly":0, "life":5, "damage":1, "firerate":30, "magsize":20, "reloadtime":100, "bulletspeed":3}
 ]

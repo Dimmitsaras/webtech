@@ -3,7 +3,6 @@
 function Bullet(initx, inity, xspeed, yspeed, damage){
   var canvas = document.getElementById("gamecanvas");
   var ctx = canvas.getContext("2d");
-  var playerlife = document.getElementById("playerlife");
   //var p = p;
 
   this.width = 2;
@@ -48,10 +47,10 @@ function Bullet(initx, inity, xspeed, yspeed, damage){
       this.visible = false;
       unit.life = unit.life - this.damage;
       if (unit.type === "Player"){
-        playerlife.innerHTML = unit.life;
+        document.getElementById("audioeffective").play();
       }
       else if (unit.type === "Enemy"){
-        
+        document.getElementById("audioclick").play();
       }
       return true;
     }

@@ -42,10 +42,10 @@ function Player(){
     }
   }
 
-  this.update = function(keys, enemies, score){
+  this.update = function(keys, enemies, score, gameover){
     //console.log(keys.toString());
     //this.score ++;
-
+    document.getElementById("playerlife").innerHTML = "Life: " + this.life;
     this.yspeed = 0;
     this.xspeed = 0;
     //console.log(this.bullets);
@@ -68,14 +68,14 @@ function Player(){
     //console.log(enemies);
     if(!this.bullets.isEmpty || typeof(bullets) != 'undefined'){
       this.bullets.forEach((bullet, i) => {
-        if(!bullet.outofboundsx() && !bullet.outofboundsy()){
+        if(!bullet.outofboundsx() && !bullet.outofboundsy() && !gameover){
           //console.log("in bounds");
           enemies.forEach((enemy,i) => {
             if(bullet.intersectswith(enemy)){
               //console.log("true");
               this.score = this.score + this.damage;
               score = score + this.damage;
-              console.log(score);
+              //console.log(score);
             }
           });
         }
@@ -90,6 +90,7 @@ function Player(){
     }
     else{
       //console.log("outofx");
+      document.getElementById("audiothud").play();
     }
     if(!this.outofboundsy(this.y + this.yspeed)){
       this.y = this.y + this.yspeed;
@@ -97,6 +98,7 @@ function Player(){
     }
     else{
       //console.log("outofy");
+      document.getElementById("audiothud").play();
     }
     return score;
     //enemybullets.forEach(bullet => bullet.intersectswith(this));
@@ -156,6 +158,7 @@ function Player(){
   }
   this.dead = function(){
     if(this.life <= 0){
+      this.life = 0;
       return true;
     }
     else{

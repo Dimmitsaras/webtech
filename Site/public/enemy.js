@@ -2,17 +2,21 @@
 
 
 
-function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
+function Enemy(moving, movespeed, x, y, finalx, finaly, life, damage, firerate, magsize, reloadtime, bulletspeed){
   var canvas = document.getElementById("gamecanvas");
   var ctx = canvas.getContext("2d");
   //var p = p;
 
   this.type = "Enemy"
+  this.init = 1;
 
   this.width = 20;
   this.height = 20;
   this.x = x;
   this.y = y;
+  this.finalx = finalx;
+  this.finaly = finaly;
+
   this.life = life;
 
   this.firecounter = 0;
@@ -24,10 +28,18 @@ function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
   this.bulletdirection = 1; //all enemies shoot downwards
   this.bullets = [];
   this.bulletthreshold = canvas.height * 2 / this.bulletspeed;
+  this.reloadtime = reloadtime;
+  this.reloadtimer = 0;
 
   this.yspeed = 0;
   this.xspeed = 0;
-  this.movespeed = 2.5;
+  this.movespeed = movespeed;
+
+  this.moving = moving;
+  this.futureplacesx = [];
+  this.futureplacesy = [];
+  this.movementindex = 0;
+
 
 
   this.draw = function(){
@@ -49,8 +61,42 @@ function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
     //console.log(this.bullets);
     this.yspeed = 0;
     this.xspeed = 0;
-    if(this.firing && this.firecounter >= this.firerate){
+    if(this.init === 1){
+      this.init = 0;
+      if(this.moving){
+        this.interpolatepath(x, y, finalx, finaly);
+      }
+    }
+    if(this.moving && this.movementindex < this.futureplacesx.length){
+      if(!this.outofboundsx(this.futureplacesx[Math.round(this.movementindex)])){
+        this.x = this.futureplacesx[Math.round(this.movementindex)];
+      }
+      if(!this.outofboundsy(this.futureplacesy[Math.round(this.movementindex)])){
+        this.y = this.futureplacesy[Math.round(this.movementindex)];
+      }
+      this.movementindex += this.movespeed;
+    }
+    else if(this.moving){
+      //console.log(this.x);
+      //console.log(this.y);
+      //console.log(x);
+      //console.log(y);
+      this.futureplacesx = [];
+      this.futureplacesy = [];
+      if(this.x === x){
+        this.interpolatepath(this.x, this.y, finalx, finaly);
+      }
+      else{
+        this.interpolatepath(this.x, this.y, x, y);
+      }
+
+      this.movementindex = 0;
+    }
+
+
+    if(this.firing && this.firecounter >= this.firerate && this.magsize > 0){
       this.firecounter = 0;
+      this.magsize --;
       if(this.bulletdirection < 0){
         this.bullets.push(new Bullet(this.x + this.width/2, this.y-this.height/2, 0, this.bulletdirection * this.bulletspeed, this.damage));
       }
@@ -60,8 +106,15 @@ function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
 
       //this.firing = false;
     }
-    else{
+    else if(this.magsize > 0){
       this.firecounter++;
+    }
+    else{
+      this.reloadtimer ++;
+      if(this.reloadtimer > this.reloadtime){
+        this.magsize = magsize;
+        this.reloadtimer = 0;
+      }
     }
     if(!this.bullets.isEmpty || typeof(bullets) != 'undefined'){
       this.bullets.forEach((bullet, i) => {
@@ -108,6 +161,7 @@ function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
 
   this.dead = function(){
     if(this.life <= 0){
+      document.getElementById("audionoteffective").play();
       return true;
     }
     else{
@@ -115,7 +169,28 @@ function Enemy(x, y, life, damage, firerate, magsize, bulletspeed){
     }
   }
   this.interpolatepath = function(x1, y1, x2, y2){
+    var distx = x2-x1;
+    var disty = y2-y1;
+    var dist = Math.sqrt((distx*distx) + (disty * disty));
+    var xplaces = this.interpolate(x1, x2, dist);
+    var yplaces = this.interpolate(y1, y2, dist);
+    var i;
+    for(i = 0; i < dist; i++){
+      this.futureplacesx.push(xplaces[i]);
+      this.futureplacesy.push(yplaces[i]);
+    }
+    //console.log(this.futureplacesx);
+  }
 
+  this.interpolate = function(from, to, numberOfValues){
+    var toreturn = [];
+    var incremental = (to - from) / (numberOfValues - 1);
+    var i;
+    for(i = 0; i < numberOfValues; i++){
+      toreturn.push(Math.round(from));
+      from = from + incremental
+    }
+    return toreturn;
   }
   ///
   //vector<float> interpolate(float from, float to, int numberOfValues){
