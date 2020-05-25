@@ -12,7 +12,7 @@ function Player(){
   this.height = 20;
   this.x = canvas.width/2 - this.width/2;
   this.y = canvas.height - 100 - this.height/2;
-  this.life = 100;
+  this.life = 20;
 
   this.firerate = 10;
   this.firecounter = 0;

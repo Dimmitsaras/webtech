@@ -8,7 +8,7 @@ create();
 async function create() {
     try {
         var db = await sqlite.open("./dodgegame.sqlite");
-        await db.run("CREATE TABLE users (userid INTEGER NOT NULL, username, password, primary key (userid))");
+        await db.run("CREATE TABLE users (userid INTEGER NOT NULL, username, password, email, primary key (userid))");
         await db.run("INSERT INTO users (username, password) VALUES ('test', 'password')");
         await db.run("CREATE TABLE highscores (id, gameid, nickname, gamedata, highscore, foreign key (id) references users(id))");
         await db.get("pragma foreign_keys = on");

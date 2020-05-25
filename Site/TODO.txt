@@ -1,0 +1,3 @@
+leaderboards page
+make svg and png artbook?
+structure the website (html and css)

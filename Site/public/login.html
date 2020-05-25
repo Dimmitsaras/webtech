@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <script src="hello.js"></script>
+  <script src="bug.js"></script>
+</head>
+<body>
+  <header>
+    <section id="icon">
+      <img alt="siteicon" src="logo.png"/>
+    </section>
+    <nav>
+      <a class = "Game" href="index.html">HOME</a>
+      <a class = "About" href="login.html">LOGIN</a>
+      <a class = "About" href="about.html">ABOUT</a>
+    </nav>
+  </header>
+  <main>
+    <section id="login">
+      <h2>
+        <p><strong>Leaderboards</strong></p>
+      </h2>
+      <form id="loginform" method="post" enctype="application/x-www-form-urlencoded" action="./index.html">
+        <p><label>Username: <input name="username" maxlength="16" required="true"/> </label></p>
+        <p><label>Password: <input name="password" type="password" maxlength="32" required="true"/> </label></p>
+         <p><button>Submit</button></p>
+      </form>
+    </section>
+    <section id="register">
+      <h2>
+        <p><strong>Register</strong></p>
+      </h2>
+      <form id="registerform" method="post" enctype="application/x-www-form-urlencoded" action="./index.html">
+        <p><label>Email: <input name="email" type="email" maxlength="64" required="true"/> </label></p>
+        <p><label>Username: <input name="username" maxlength="16" required="true"/> </label></p>
+        <p><label>Password: <input name="password" type="password" maxlength="32" required="true"/> </label></p>
+        <p><button>Submit</button></p>
+      </form>
+    </section>
+    <h4>
+      <p>Developed by Dimitris Papapostolou</p>
+      <p>For COMS32500 Web Technologies</p>
+    </h4>
+  </main>
+</body>
+</html>

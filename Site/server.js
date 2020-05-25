@@ -12,6 +12,7 @@
 
 // Change the port to the default 80, if there are no permission issues and port
 // 80 isn't already in use. The root folder corresponds to the "/" url.
+//443=https
 let port = 8443;
 let root = "./public"
 
@@ -22,9 +23,12 @@ let root = "./public"
 // The paths variable is a cache of url paths in the site, to check case.
 let https = require("https");
 let fs = require("fs").promises;
+let sqlite = require("sqlite");
+let { parse } = require('querystring');
 let OK = 200, NotFound = 404, BadType = 415, Error = 500;
 let types, paths, options;
 let gamedatatype = ".json";
+let defaulturl = root + "./index.html";
 
 
 
@@ -48,7 +52,7 @@ async function start() {
         let service = https.createServer(options, handle);
         service.listen(port, "localhost");
         let address = "http://localhost";
-        if (port != 80) address = address + ":" + port;
+        if (port != 443) address = address + ":" + port;
         console.log("Server running at", address);
     }
     catch (err) { console.log(err); process.exit(1); }
@@ -57,14 +61,24 @@ async function start() {
 // Serve a request by delivering a file.
 async function handle(request, response) {
     var url = request.url;
+    if(url.endsWith("?")){
+      var questionmark = url.lastIndexOf("?");
+      url = url.substring(0, questionmark);
+    }
     if (url.endsWith("/")) url =  url + "index.html";
     //console.log(url);
     if(await validate(url)){
-      if (url.startsWith("/gamedata")){
-        console.log("gamedata");
-        getGamedata(url, response);
+      if(request.method == "POST" || request.headers['content-type'] === 'application/x-www-form-urlencoded'){
+        console.log(request.headers['content-type']);
+        receivedForm(request, url, response);
       }
-      else getFile(request, url, response)
+      else{
+        if (url.startsWith("/gamedata")){
+          //console.log("gamedata");
+          getGamedata(url, response);
+        }
+        else getFile(request, url, response)
+      }
     }
     else{
       return fail(response, BadType, "Invalid URL");
@@ -105,7 +119,6 @@ function isASCII(url) {
 
 }
 async function getFile(request, url, response) {
-
     let ok = await checkPath(url);
     if (! ok) return fail(response, NotFound, "URL not found (check case)");
     let type = await findType(url);
@@ -121,6 +134,10 @@ async function getFile(request, url, response) {
         type = otype;
       }
     }
+    else if (type === "application/x-www-form-urlencoded") {
+      console.log("hehe");
+    }
+    //console.log(type);
     if (type == null) return fail(response, BadType, "File type not supported");
     let file = root + url;
     let content = await fs.readFile(file);
@@ -129,10 +146,8 @@ async function getFile(request, url, response) {
 
 async function getGamedata(url, response){
   let defaultfile = await "." + "/gamedatadefault" + gamedatatype;
-  let file = await "." + url + gamedatatype;
-  //let type = types[json];
-  //console.log(defaultfile);
-  //console.log(file);
+  let file = await "." + url;
+  console.log(file);
   let content;
   //try to find file of that type, if doesnt exist deliver the default file.
   try{
@@ -141,8 +156,76 @@ async function getGamedata(url, response){
   catch(e){
      content = await fs.readFile(defaultfile, "utf8");
   }
-  //console.log(content);
+  console.log(content);
   deliver (response, "application/json", content);
+}
+
+async function receivedForm(request, url, response){
+    let body ='';
+    request.on('data' , async chunk => {
+      body += await chunk.toString();
+      //console.log(JSON.parse(JSON.stringify(parse(body))));
+      formDecision(JSON.parse(JSON.stringify(parse(body))));
+    });
+    //console.log(parse(body));
+    //await fs.writeFile("hello.json", parse(body));
+
+    //request.on('end', () => {
+      //response.end('Login successful');
+    //  getFile(request, defaulturl, response);
+    //});
+  //getFile(request, url, repsonse);
+}
+
+async function formDecision(body){
+  console.log(body);
+  var user = body.username
+  var nickname = body.nickname;
+  var score = body.score;
+  var gamemode = body.gamemode;
+  //console.log(body.email);
+    //console.log("LOGIN");
+  try{
+    var db = await sqlite.open("./dodgegame.sqlite");
+    //console.log(await db.get('SELECT * FROM users'));
+    var ins = await db.prepare("INSERT INTO leaderboard (name, score, gamemode) VALUES(?,?,?)");
+    var res = await ins.run(nickname, score, gamemode);
+    console.log(await ins.lastID);
+    var leadid = await ins.lastID;
+    await ins.finalize();
+    //console.log(res);
+    var chk = await db.prepare("SELECT * FROM users WHERE username=?");
+    var userid = chk.lastID;
+    var resuser = await chk.get(user);
+    await chk.finalize();
+    if(resuser === undefined){
+      var us = await db.prepare("INSERT INTO users (username, highscore, gameid) VALUES(?,?,?)");
+      console.log(leadid);
+      await us.run(user, score, leadid);
+      await us.finalize();
+    }
+    else{
+      console.log(resuser);
+      console.log("Exists")
+      console.log(leadid);
+      if(resuser.highscore <= score){
+        var updt = await db.prepare("UPDATE users SET highscore = ?, gameid = ? WHERE username = ?")
+        updt.run(score, leadid, user);
+        updt.finalize();
+        resuser.highscore = score;
+        resuser.gameid = leadid;
+      }
+      else{
+        //nothing
+        console.log("Not a highscore nothing done");
+      }
+
+    }
+  }
+  catch(e){
+    console.log(e);
+  }
+
 }
 
 // Check if a path is in or can be added to the set of site paths, in order

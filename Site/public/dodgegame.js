@@ -2,12 +2,12 @@
 
 addEventListener('load', start);
 
-async function fetchdata(){
-  return fetch("/gamedata123.json").then(receive);
+async function fetchdata(gamedata){
+  return fetch(gamedata).then(receive);
 }
 async function receive(response){
   let data = await response.json();
-  console.log(data);
+  //console.log(data);
   return data;
 }
 
@@ -15,8 +15,12 @@ async function start(){
   //let data;
   //fetchdata();
   var BreakException = {};
-  let gamedata = await fetchdata();
+  var defaultgamedata = "/gamedata1.json";
+  let gamedata = await fetchdata("/gamedata1.json");
+  //console.log(gamedata);
   //var pauseaud = new Audio("./Assets/Audio/pause.mp3");
+  var gamemode = "hey";
+  gamemode = defaultgamedata.substring(1, defaultgamedata.length-5);
   var pauseaud = document.getElementById("audiopause");
   var keys = [];
   var enemies = [];
@@ -27,8 +31,8 @@ async function start(){
   var usablekeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "W", "w", "A", "a", "S", "s", "D", "d", "K", "k", "L", "l", "Z", "z", "X", "x", "P", "p"];
   var canvas = document.getElementById("gamecanvas");
   var ctx = canvas.getContext("2d");
-  var uicanvas = document.getElementById("gameUI");
-  var ctxui = uicanvas.getContext("2d");
+  //var uicanvas = document.getElementById("gameUI");
+  //var ctxui = uicanvas.getContext("2d");
   var p = new Player();
   var scoretimer = 0;
   var frametimer = 0;
@@ -41,19 +45,20 @@ async function start(){
 
   var startgame = new Button(p);
   var pausecard = new Pausecard();
+  var levelbuttons = [new Levelbutton(p, canvas.width/20, canvas.height*3/4, "/gamedata1.json", "Level 1"), new Levelbutton(p, canvas.width*15/40, canvas.height*3/4, "/gamedata2.json", "Level 2"), new Levelbutton(p, canvas.width*14/20, canvas.height*3/4, "/gamedataasdf.json", "Level 3")];
   fillcanvas();
 
   document.onkeydown = logKey;
   document.onkeyup = unlogKey;
 
-  function fillcanvas(){
+  async function fillcanvas(){
     ctx.fillStyle = "#272727";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctxui.fillStyle = "#404040";
-    ctxui.fillRect(0, 0, canvas.width, canvas.height);
+    //ctxui.fillStyle = "#404040";
+    //ctxui.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  function logKey(e){
+  async function logKey(e){
     //console.log(e.key);
     //p checks for pause
     if(!keys.isEmpty && !keys.includes(e.key) && usablekeys.includes(e.key)){
@@ -75,7 +80,7 @@ async function start(){
       }
     }
   }
-  function unlogKey(e){
+  async function unlogKey(e){
     if(usablekeys.includes(e.key) && e.key !== "P" && e.key !== "p"){
       var index = keys.indexOf(e.key);
       keys.splice(index, 1);
@@ -85,14 +90,36 @@ async function start(){
   var game = setInterval(update, speed);
 
 
-  function update(){
+    async function update(){
     //if the game isnt paused
     if(!keys.includes("P") && !keys.includes("p")){
       //score parameter makes this score = score + this.score!
       score = p.update(keys, enemies, score, gameover);
       //e.update();
-      startgame.update(keys)
+      startgame.update(keys);
+      levelbuttons.forEach(async (levelbutton, i) => {
+        //console.log("hehe");
+        levelbutton.update(keys);
+        if(levelbutton.pressed){
+          for(var j = 0; j < levelbuttons.length; j++){
+            if(j != i){
+              levelbuttons[j].visible = true;
+              levelbuttons[j].pressed = false;
+            }
+          }
+          console.log(levelbutton.gamedata)
+          gamedata = await fetchdata(levelbutton.gamedata);
+          levelbutton.pressed = false;
+          console.log(gamedata);
+          gamemode = levelbutton.gamedata.substring(1, levelbutton.gamedata.length-5);
+          console.log(gamemode);
+        }
+        else{
+
+        }
+      });
       if(!startgame.visible && !p.dead() && !victory){
+        levelbuttons = [];
         scoretimer ++;
         if(scoretimer / 60 == 1){
           score --;
@@ -126,6 +153,7 @@ async function start(){
                 //console.log(frametimer);
                 //frametimer++;
                 if(gamedatarow.type === "Endless"){
+                  gamemode = "Endless";
                           //                     moving movespeed     x                                      y                          xfinal                              yfinal                 life                  damage              firerate              magsize              reloardtime            bulletspeed
                   enemies.push(new Enemy(true, randomint(4), randomint(canvas.width -20), randomint(canvas.height / 2 + 80), randomint(canvas.width - 20), randomint(canvas.height / 2 + 80), randombetween(3,10), randombetween(1,5), randombetween(20,40), randombetween(5,30), randombetween(80, 400), randombetween(2,4)));
                 }
@@ -181,6 +209,9 @@ async function start(){
           if(!gameover) {
 
             document.getElementById("audiosupereffective").play();
+            document.getElementById("scoreform").value = score;
+
+            document.getElementById("gamemodeform").value = gamemode;
           }
           gameover = true;
       }
@@ -192,10 +223,14 @@ async function start(){
     }
   }
 
-  function draw(){
+  async function draw(){
     fillcanvas();
     startgame.draw();
     p.draw();
+    levelbuttons.forEach( async (levelbutton, i) => {
+      levelbutton.draw();
+    });
+
     if(!startgame.visible && !p.dead()){
       //console.log("no");
       //Gameplay has started
@@ -205,7 +240,7 @@ async function start(){
 
   }
 
-  function playerintersection(p, object){
+  async function playerintersection(p, object){
     var pcenterx = p.x + p.width/2;
     var pcentery = p.y + p.height/2;
     console.log(pcenterx >= this.x && pcenterx <= this.x + this.width && pcentery >= this.y && pcentery <= this.y + this.height);

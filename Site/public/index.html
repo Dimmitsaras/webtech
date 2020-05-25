@@ -2,23 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 lang="en-GB" xml:lang="en-GB">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>test</title>
-<link rel="stylesheet" href="index.css"/>
-<script src="dodgegame.js"></script>
-<script src="player.js"></script>
-<script src="button.js"></script>
-<script src="pausecard.js"></script>
-<script src="enemy.js"></script>
-<script src="bullet.js"></script>
-<audio id="audiopotion" src="./Assets/Audio/potion.mp3" type="audio/mp3"></audio>
-<audio id="audiopause" src="./Assets/Audio/pause.mp3" type="audio/mp3"></audio>
-<audio id="audioclick" src="./Assets/Audio/click.mp3" type="audio/mp3"></audio>
-<audio id="audiothud" src="./Assets/Audio/thud.mp3" type="audio/mp3"></audio>
-<audio id="audionoteffective" src="./Assets/Audio/noteffective.mp3" type="audio/mp3"></audio>
-<audio id="audioeffective" src="./Assets/Audio/effective.mp3" type="audio/mp3"></audio>
-<audio id="audiosupereffective" src="./Assets/Audio/supereffective.mp3" type="audio/mp3"></audio>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dodgegame</title>
+  <link rel="stylesheet" href="index.css"/>
+  <script src="dodgegame.js"></script>
+  <script src="player.js"></script>
+  <script src="button.js"></script>
+  <script src="levelbutton.js"></script>
+  <script src="pausecard.js"></script>
+  <script src="enemy.js"></script>
+  <script src="bullet.js"></script>
+  <audio id="audiopotion" src="./Assets/Audio/potion.mp3"></audio>
+  <audio id="audiopause" src="./Assets/Audio/pause.mp3"></audio>
+  <audio id="audioclick" src="./Assets/Audio/click.mp3"></audio>
+  <audio id="audiothud" src="./Assets/Audio/thud.mp3"></audio>
+  <audio id="audionoteffective" src="./Assets/Audio/noteffective.mp3"></audio>
+  <audio id="audioeffective" src="./Assets/Audio/effective.mp3"></audio>
+  <audio id="audiosupereffective" src="./Assets/Audio/supereffective.mp3"></audio>
 </head>
 <body>
   <header>
@@ -28,21 +29,29 @@ lang="en-GB" xml:lang="en-GB">
       </h4>
     </section>
     <nav>
-      <a class = "Home" href="index.html">HOME</a>
-      <a class = "Deckbuilder" href="deckbuilder.html">DECKBUILDER</a>
+      <a class = "Game" href="index.html">HOME</a>
+      <a class = "About" href="login.html">LOGIN</a>
+      <a class = "About" href="about.html">ABOUT</a>
       text
     </nav>
   </header>
   <main>
-    <p><strong>This paragraph is bold.</strong></p>
-    <p>Should this paragraph be bold, or not?</p>
+    <h3><p>Dodgegame</p>
+    </h3>
+    <section id="gameandform">
       <canvas id="gamecanvas" width="600" height="600"> </canvas>
-      <canvas id="gameUI" width="600" height="40"> </canvas>
+      <form id="highscoreform" method="post" enctype="application/x-www-form-urlencoded" action="" onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+        <p><label>User ID: <input name="username" maxlength="16" required="true"/> </label></p>
+        <p><label>Nickname: <input name="nickname" maxlength="16" required="true"/> </label></p>
+        <p><label id="scoreformlabel">Score: <input id="scoreform" name="score" required="true" readonly="true"/> </label></p>
+        <p><label>Gamemode: <input id="gamemodeform" name="gamemode" maxlength="16" required="true" readonly="true"/> </label></p>
+         <p><button>Submit</button></p>
+       </form>
+    </section>
       <h3>
-        <p id="score">Score</p>
+        <p id="score" name="score">Score</p>
         <p id="playerlife">Life</p>
       </h3>
   </main>
-  <p>test2</p>
 </body>
 </html>
