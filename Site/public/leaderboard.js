@@ -28,7 +28,7 @@ async function start(){
 }
 
 async function getDataButton(name){
-  console.log("hehe");
+  //console.log("hehe");
   var table = document.getElementById("thetable");
   table.innerHTML="";
   //while (table.hasChildNodes()) {
@@ -39,7 +39,7 @@ async function getDataButton(name){
 
 async function getData(name){
   let data = await fetchdata(name);
-  console.log(data);
+  //console.log(data);
   printLeaderboard(data);
 }
 

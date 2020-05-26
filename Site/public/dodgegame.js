@@ -120,12 +120,12 @@ async function start(){
               levelbuttons[j].pressed = false;
             }
           }
-          console.log(levelbutton.gamedata)
+          //console.log(levelbutton.gamedata)
           gamedata = await fetchdata(levelbutton.gamedata);
           levelbutton.pressed = false;
-          console.log(gamedata);
+          //console.log(gamedata);
           gamemode = levelbutton.gamedata.substring(1, levelbutton.gamedata.length-5);
-          console.log(gamemode);
+          //console.log(gamemode);
         }
         else{
 
