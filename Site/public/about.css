@@ -51,7 +51,7 @@ nav a:hover {
 footer{
   text-align: center;
   left: 0;
-  bottom: 0;
+  bottom: -3em;
   box-sizing: border-box;
   clear: both;
   margin-top: 0.5em;
@@ -62,31 +62,13 @@ body{
   padding: 0;
   margin: 0;
   min-width: 640px;
+  min-height: 100%;
+  height: 100%;
 }
 
 main {
   box-sizing: border-box;
   padding-bottom: 35em;
-}
-
-#info{
-  padding-left: 4%;
-}
-
-#gamecanvas , #highscoreform {
-  text-align: justify;
-}
-
-#gamecanvas{
-  border: 0.1em;
-  float: left;
-  margin: 0 2% 0 4%;
-}
-
-#highscoreform{
-  width: 44%
-  float: right;
-  margin: 0 2% 0 4%;
 }
 
 button{
@@ -98,10 +80,19 @@ button{
   text-decoration: none;
   display: inline-block;
 }
+#info{
+  padding-left: 2%;
+}
 #icon{
   margin-right: 5.5em;
   height: 30%;
   width: 5%;
   object-fit: cover;
   transform: scale(0.17);
+}
+#biglogo{
+  margin-right: 0;
+  height: 15%;
+  width: 15%;
+  object-fit: cover;
 }

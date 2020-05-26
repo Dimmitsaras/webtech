@@ -69,13 +69,18 @@ async function handle(request, response) {
     //console.log(url);
     if(await validate(url)){
       if(request.method == "POST" || request.headers['content-type'] === 'application/x-www-form-urlencoded'){
-        console.log(request.headers['content-type']);
+        //console.log(request.headers['content-type']);
+        //console.log("FORM");
         receivedForm(request, url, response);
       }
       else{
         if (url.startsWith("/gamedata")){
           //console.log("gamedata");
           getGamedata(url, response);
+        }
+        else if(url.startsWith("/ldata")){
+          //console.log("ldata");
+          getLeaderboard(request, url, response);
         }
         else getFile(request, url, response)
       }
@@ -134,9 +139,9 @@ async function getFile(request, url, response) {
         type = otype;
       }
     }
-    else if (type === "application/x-www-form-urlencoded") {
-      console.log("hehe");
-    }
+    //else if (type === "application/x-www-form-urlencoded") {
+      //console.log("hehe");
+    //}
     //console.log(type);
     if (type == null) return fail(response, BadType, "File type not supported");
     let file = root + url;
@@ -147,7 +152,7 @@ async function getFile(request, url, response) {
 async function getGamedata(url, response){
   let defaultfile = await "." + "/gamedatadefault" + gamedatatype;
   let file = await "." + url;
-  console.log(file);
+  //console.log(file);
   let content;
   //try to find file of that type, if doesnt exist deliver the default file.
   try{
@@ -156,7 +161,7 @@ async function getGamedata(url, response){
   catch(e){
      content = await fs.readFile(defaultfile, "utf8");
   }
-  console.log(content);
+  //console.log(content);
   deliver (response, "application/json", content);
 }
 
@@ -177,55 +182,90 @@ async function receivedForm(request, url, response){
   //getFile(request, url, repsonse);
 }
 
-async function formDecision(body){
-  console.log(body);
-  var user = body.username
-  var nickname = body.nickname;
-  var score = body.score;
-  var gamemode = body.gamemode;
-  //console.log(body.email);
-    //console.log("LOGIN");
+async function getLeaderboard(request, url, response){
   try{
-    var db = await sqlite.open("./dodgegame.sqlite");
-    //console.log(await db.get('SELECT * FROM users'));
-    var ins = await db.prepare("INSERT INTO leaderboard (name, score, gamemode) VALUES(?,?,?)");
-    var res = await ins.run(nickname, score, gamemode);
-    console.log(await ins.lastID);
-    var leadid = await ins.lastID;
-    await ins.finalize();
+    var db = await sqlite.open("dodgegame.sqlite");
+    url = url.substring(6, url.length-4);
+    var res
+    //console.log(url);
+    switch(url){
+      case "1":
+      case 1:
+        res = await db.all("SELECT name, score, gamemode FROM leaderboard WHERE gamemode = 'gamedata1' ORDER BY CAST(score AS INTEGER) DESC LIMIT 100");
+        break;
+      case "2":
+      case 2:
+        //console.log("UTS234234234");
+        res = await db.all("SELECT name, score, gamemode FROM leaderboard WHERE gamemode = 'gamedata2' ORDER BY CAST(score AS INTEGER) DESC LIMIT 100");
+        break;
+      case "3":
+      case 3:
+        res = await db.all("SELECT name, score, gamemode FROM leaderboard WHERE gamemode = 'Endless' ORDER BY CAST(score AS INTEGER) DESC LIMIT 100");
+        break;
+      default:
+        res = await db.all("SELECT name, score, gamemode FROM leaderboard ORDER BY CAST(score AS INTEGER) DESC LIMIT 10");
+        break;
+    }
+    res = JSON.stringify(res);
     //console.log(res);
-    var chk = await db.prepare("SELECT * FROM users WHERE username=?");
-    var userid = chk.lastID;
-    var resuser = await chk.get(user);
-    await chk.finalize();
-    if(resuser === undefined){
-      var us = await db.prepare("INSERT INTO users (username, highscore, gameid) VALUES(?,?,?)");
-      console.log(leadid);
-      await us.run(user, score, leadid);
-      await us.finalize();
-    }
-    else{
-      console.log(resuser);
-      console.log("Exists")
-      console.log(leadid);
-      if(resuser.highscore <= score){
-        var updt = await db.prepare("UPDATE users SET highscore = ?, gameid = ? WHERE username = ?")
-        updt.run(score, leadid, user);
-        updt.finalize();
-        resuser.highscore = score;
-        resuser.gameid = leadid;
-      }
-      else{
-        //nothing
-        console.log("Not a highscore nothing done");
-      }
-
-    }
+    deliver (response, "application/json", res);
   }
   catch(e){
     console.log(e);
   }
 
+}
+
+async function formDecision(body){
+  //console.log(body);
+  var user = body.username
+  var nickname = body.nickname;
+  var score = body.score;
+  var gamemode = body.gamemode;
+  //console.log(gamemode);
+  //console.log(body.email);
+    //console.log("LOGIN");
+  if(gamemode.length > 0 && score.length > 0){
+    try{
+      var db = await sqlite.open("./dodgegame.sqlite");
+      //console.log(await db.get('SELECT * FROM users'));
+      var ins = await db.prepare("INSERT INTO leaderboard (name, score, gamemode) VALUES(?,?,?)");
+      var res = await ins.run(nickname, score, gamemode);
+      //console.log(await ins.lastID);
+      var leadid = await ins.lastID;
+      await ins.finalize();
+      //console.log(res);
+      var chk = await db.prepare("SELECT * FROM users WHERE username=?");
+      var userid = chk.lastID;
+      var resuser = await chk.get(user);
+      await chk.finalize();
+      if(resuser === undefined){
+        var us = await db.prepare("INSERT INTO users (username, highscore, gameid) VALUES(?,?,?)");
+        //console.log(leadid);
+        await us.run(user, score, leadid);
+        await us.finalize();
+      }
+      else{
+        //console.log(resuser);
+        //console.log("Exists")
+        if(parseInt(score) >= parseInt(resuser.highscore)){
+          var updt = await db.prepare("UPDATE users SET highscore = ?, gameid = ? WHERE username = ?")
+          updt.run(score, leadid, user);
+          updt.finalize();
+          resuser.highscore = score;
+          resuser.gameid = leadid;
+        }
+        else{
+          //nothing
+          //console.log("Not a highscore nothing done");
+        }
+
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
 }
 
 // Check if a path is in or can be added to the set of site paths, in order
@@ -307,6 +347,7 @@ function defineTypes() {
         rar  : undefined,      // non-standard, platform dependent, use .zip
         doc  : undefined,      // non-standard, platform dependent, use .pdf
         docx : undefined,      // non-standard, platform dependent, use .pdf
+        dat : "application/json" //custom data
     }
     return types;
 }

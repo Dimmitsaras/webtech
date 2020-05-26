@@ -4,6 +4,8 @@ lang="en-GB" xml:lang="en-GB">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="about.css"/>
   <title>About</title>
   <script src="hello.js"></script>
   <script src="bug.js"></script>
@@ -11,22 +13,35 @@ lang="en-GB" xml:lang="en-GB">
 <body>
   <header>
     <section id="icon">
-      <img alt="siteicon" src="logo.png"/>
+      <object data="logo.svg" type="image/svg+xml">
+        SVG isn't supported by your browser
+      </object>
     </section>
     <nav>
       <a class = "Game" href="index.html">HOME</a>
-      <a class = "About" href="login.html">LOGIN</a>
+      <a class = "Leaderboards" href="leaderboards.html">LEADERBOARDS</a>
       <a class = "About" href="about.html">ABOUT</a>
     </nav>
   </header>
   <main>
+        <section id="info">
     <h2>
       <p><strong>Dodgegame</strong></p>
     </h2>
-    <h4>
-      <p>Developed by Dimitris Papapostolou</p>
-      <p>For COMS32500 Web Technologies</p>
-    </h4>
+  </section>
+  <section id="gallery">
+    <object id="biglogo" data="logo.svg" type="image/svg+xml">
+      SVG isn't supported by your browser
+    </object>
+    <img src="candle.png" type="image/png"> </img>
+  </section>
+
+    <footer>
+      <h4>
+        <p>Developed by Dimitris Papapostolou</p>
+        <p>For COMS32500 Web Technologies</p>
+      </h4>
+    </footer>
   </main>
 </body>
 </html>

@@ -51,6 +51,13 @@ async function start(){
   document.onkeydown = logKey;
   document.onkeyup = unlogKey;
 
+  window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
+
   async function fillcanvas(){
     ctx.fillStyle = "#272727";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -86,6 +93,12 @@ async function start(){
       keys.splice(index, 1);
     }
 }
+  var button = document.getElementById("submitbutton");
+  var form = document.getElementById("highscoreform");
+  form.addEventListener('submit', function(){
+    button.innerHTML= "...";
+    button.disabled = true;
+  });
 
   var game = setInterval(update, speed);
 
@@ -204,13 +217,11 @@ async function start(){
       }
       document.getElementById("score").innerHTML = "Score: " + score;
       requestAnimationFrame(draw);
-      if(p.dead()){
+      if(p.dead() || victory){
           //Player dead game over
           if(!gameover) {
-
             document.getElementById("audiosupereffective").play();
-            document.getElementById("scoreform").value = score;
-
+            document.getElementById("scoreform").value = score + p.life;
             document.getElementById("gamemodeform").value = gamemode;
           }
           gameover = true;

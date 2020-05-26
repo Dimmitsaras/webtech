@@ -69,25 +69,43 @@ main {
   padding-bottom: 35em;
 }
 
-#info{
-  padding-left: 4%;
+
+#buttons {
+  padding: 1em;
+  margin: auto;
+  vertical-align: middle;
+  text-align: center;
+  width: 70%;
+
 }
 
-#gamecanvas , #highscoreform {
-  text-align: justify;
+table, th, td{
+  font-size: 1.3em;
+  table-layout: fixed;
+  margin: auto;
+  vertical-align: middle;
+  text-align: center;
+  width: 50%;
+  border-collapse: collapse;
+  border: 0.1em solid black;
 }
 
-#gamecanvas{
-  border: 0.1em;
-  float: left;
-  margin: 0 2% 0 4%;
+tr:nth-child(1){
+  background-color: black;
+  color:white;
 }
 
-#highscoreform{
-  width: 44%
-  float: right;
-  margin: 0 2% 0 4%;
+tr:nth-child(even){
+  background-color: #f2f2f2;
 }
+
+tr:hover{
+  background-color: white;
+}
+tr:nth-child(1):hover{
+  background-color: black;
+}
+
 
 button{
   background-color: #696969;
@@ -97,6 +115,10 @@ button{
   text-align: center;
   text-decoration: none;
   display: inline-block;
+}
+
+#info{
+  padding-left: 2%;
 }
 #icon{
   margin-right: 5.5em;

@@ -6,6 +6,11 @@ lang="en-GB" xml:lang="en-GB">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dodgegame</title>
   <link rel="stylesheet" href="index.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css" />
+  <!--[if IE]>
+<script src="//cdnjs.../html5shiv.min.js"
+  ></script>
+<![endif]-->
   <script src="dodgegame.js"></script>
   <script src="player.js"></script>
   <script src="button.js"></script>
@@ -24,34 +29,44 @@ lang="en-GB" xml:lang="en-GB">
 <body>
   <header>
     <section id="icon">
-      <h4>
-        <img alt="siteicon" src="logo.png"/>
-      </h4>
+      <object data="logo.svg" type="image/svg+xml">
+        SVG isn't supported by your browser
+      </object>
     </section>
     <nav>
-      <a class = "Game" href="index.html">HOME</a>
-      <a class = "About" href="login.html">LOGIN</a>
-      <a class = "About" href="about.html">ABOUT</a>
-      text
+      <a class = "Link" href="index.html">HOME</a>
+      <a class = "Link" href="leaderboards.html">LEADERBOARDS</a>
+      <a class = "Link" href="about.html">ABOUT</a>
     </nav>
   </header>
   <main>
-    <h3><p>Dodgegame</p>
-    </h3>
+    <section id="info">
+      <h3><p>Dodgegame</p></h3>
+      <h4>
+        <p>WASD / Arrow keys: Move | K / Z: Act | P: Pause</p>
+      </h4>
+    </section>
     <section id="gameandform">
       <canvas id="gamecanvas" width="600" height="600"> </canvas>
-      <form id="highscoreform" method="post" enctype="application/x-www-form-urlencoded" action="" onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+      <form id="highscoreform" method="post" enctype="application/x-www-form-urlencoded" action="" onsubmit="setTimeout(function () { window.location.reload(); }, 10000)">
         <p><label>User ID: <input name="username" maxlength="16" required="true"/> </label></p>
         <p><label>Nickname: <input name="nickname" maxlength="16" required="true"/> </label></p>
-        <p><label id="scoreformlabel">Score: <input id="scoreform" name="score" required="true" readonly="true"/> </label></p>
+        <p><label id="scoreformlabel">Final Score: <input id="scoreform" name="score" required="true" readonly="true"/> </label></p>
         <p><label>Gamemode: <input id="gamemodeform" name="gamemode" maxlength="16" required="true" readonly="true"/> </label></p>
-         <p><button>Submit</button></p>
+         <p><button id="submitbutton">Submit</button></p>
+         <h3>
+           <p id="score" name="score">Score</p>
+           <p id="playerlife">Life</p>
+         </h3>
        </form>
     </section>
-      <h3>
-        <p id="score" name="score">Score</p>
-        <p id="playerlife">Life</p>
-      </h3>
+
   </main>
+  <footer>
+    <h4>
+      <p>Developed by Dimitris Papapostolou</p>
+      <p>For COMS32500 Web Technologies</p>
+    </h4>
+  </footer>
 </body>
 </html>
